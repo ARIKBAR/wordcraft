@@ -175,6 +175,19 @@ fn load_prefs(app: &mut WordApp) {
     {
         app.apply_prefs(ui);
     }
+    // Unofficial Hebrew build: its first launch switches the interface to Hebrew once, even over a
+    // language an official WordCraft saved in this settings folder, and hides the title bar's
+    // ArtCraft community button (a modified build doesn't speak for the ArtCraft team). Later
+    // choices in File › Options are kept.
+    if let Some(dir) = wordcraft_control_key::settings_dir() {
+        let marker = dir.join("hebrew-build-introduced");
+        if !marker.exists() {
+            let _ = app.run("ui.language", serde_json::json!({"value": "he"}));
+            app.ui.show_discord = false;
+            let _ = std::fs::create_dir_all(&dir);
+            let _ = std::fs::write(&marker, b"1");
+        }
+    }
 }
 
 /// Fonts the user added (#582) live in `fonts` in the settings folder: load them, and store fonts
