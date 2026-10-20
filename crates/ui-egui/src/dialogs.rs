@@ -1846,10 +1846,10 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 let label = tl!("Kerning for fonts:");
                 match kern {
                     Some(on) => {
-                        ui.checkbox(on, label);
+                        crate::widgets::checkbox(ui, on, label);
                     }
                     None => {
-                        if ui.add(egui::Checkbox::new(&mut false, label).indeterminate(true)).clicked() {
+                        if ui.add(crate::widgets::Checkbox::new(&mut false, label).indeterminate(true)).clicked() {
                             *kern = Some(true);
                         }
                     }
@@ -1863,19 +1863,19 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             ui.separator();
             ui.label(egui::RichText::new(tl!("Effects")).font(semibold(12.5)));
             crate::widgets::Grid::new("fx").num_columns(2).show(ui, |ui| {
-                ui.checkbox(bold, tl!("Bold"));
-                ui.checkbox(italic, tl!("Italic"));
+                crate::widgets::checkbox(ui, bold, tl!("Bold"));
+                crate::widgets::checkbox(ui, italic, tl!("Italic"));
                 ui.end_row();
-                ui.checkbox(underline, tl!("Underline"));
-                ui.checkbox(strike, tl!("Strikethrough"));
+                crate::widgets::checkbox(ui, underline, tl!("Underline"));
+                crate::widgets::checkbox(ui, strike, tl!("Strikethrough"));
                 ui.end_row();
-                ui.checkbox(sup, tl!("Superscript"));
-                ui.checkbox(sub, tl!("Subscript"));
+                crate::widgets::checkbox(ui, sup, tl!("Superscript"));
+                crate::widgets::checkbox(ui, sub, tl!("Subscript"));
                 ui.end_row();
-                ui.checkbox(small_caps, tl!("Small caps"));
-                ui.checkbox(caps, tl!("All caps"));
+                crate::widgets::checkbox(ui, small_caps, tl!("Small caps"));
+                crate::widgets::checkbox(ui, caps, tl!("All caps"));
                 ui.end_row();
-                ui.checkbox(hidden, tl!("Hidden"));
+                crate::widgets::checkbox(ui, hidden, tl!("Hidden"));
                 ui.end_row();
             });
             // Live preview of the chosen font/size/colour/effects.
@@ -1926,7 +1926,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                         // Neither while the selected paragraphs differ.
                         let blank = mixed.contains("bidi");
                         for (value, text) in [(true, tl!("Right-to-left")), (false, tl!("Left-to-right"))] {
-                            if ui.radio(!blank && *rtl == value, text).clicked() {
+                            if crate::widgets::radio(ui, !blank && *rtl == value, text).clicked() {
                                 *rtl = value;
                                 mixed.remove("bidi");
                             }
@@ -2051,9 +2051,9 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             // Word greys out Match case and the word options with wildcards (they always match case).
             let plain = !extra.wildcards;
             ui.horizontal(|ui| {
-                ui.add_enabled(plain, egui::Checkbox::new(match_case, tl!("Match case")));
-                ui.add_enabled(plain, egui::Checkbox::new(whole_word, tl!("Whole words")));
-                ui.checkbox(&mut extra.wildcards, tl!("Use wildcards"));
+                ui.add_enabled(plain, crate::widgets::Checkbox::new(match_case, tl!("Match case")));
+                ui.add_enabled(plain, crate::widgets::Checkbox::new(whole_word, tl!("Whole words")));
+                crate::widgets::checkbox(ui, &mut extra.wildcards, tl!("Use wildcards"));
             });
             let arrow = if extra.more { "▾" } else { "▸" };
             if ui.selectable_label(extra.more, format!("{arrow} {}", tl!("Search Options"))).clicked() {
@@ -2061,15 +2061,15 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             }
             if extra.more {
                 ui.horizontal(|ui| {
-                    ui.add_enabled(plain, egui::Checkbox::new(&mut extra.prefix, tl!("Match prefix")));
-                    ui.add_enabled(plain, egui::Checkbox::new(&mut extra.suffix, tl!("Match suffix")));
+                    ui.add_enabled(plain, crate::widgets::Checkbox::new(&mut extra.prefix, tl!("Match prefix")));
+                    ui.add_enabled(plain, crate::widgets::Checkbox::new(&mut extra.suffix, tl!("Match suffix")));
                 });
                 ui.horizontal(|ui| {
-                    ui.add_enabled(plain, egui::Checkbox::new(&mut extra.ignore_punct, tl!("Ignore punctuation characters")));
-                    ui.add_enabled(plain, egui::Checkbox::new(&mut extra.ignore_space, tl!("Ignore white-space characters")));
+                    ui.add_enabled(plain, crate::widgets::Checkbox::new(&mut extra.ignore_punct, tl!("Ignore punctuation characters")));
+                    ui.add_enabled(plain, crate::widgets::Checkbox::new(&mut extra.ignore_space, tl!("Ignore white-space characters")));
                 });
                 ui.horizontal(|ui| {
-                    ui.checkbox(regex, tl!("Regular expressions"));
+                    crate::widgets::checkbox(ui, regex, tl!("Regular expressions"));
                     if let Some(code) = special_menu(ui, extra) {
                         if extra.to_replace { replace.push_str(code) } else { query.push_str(code) }
                     }
@@ -2134,7 +2134,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             ui.label(egui::RichText::new(tl!("Style")).font(semibold(12.5)));
             ui.horizontal(|ui| {
                 for (v, l) in [("none", "None"), ("shrink", "Shrink text"), ("enlarge", "Enlarge symbol")] {
-                    ui.radio_value(style, v.to_string(), tl!(l));
+                    crate::widgets::radio_value(ui, style, v.to_string(), tl!(l));
                 }
             });
             ui.add_space(6.0);
@@ -2232,18 +2232,18 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             });
             ui.label(egui::RichText::new(tl!("Orientation")).font(semibold(12.5)));
             ui.horizontal(|ui| {
-                ui.radio_value(landscape, false, tl!("Portrait"));
-                ui.radio_value(landscape, true, tl!("Landscape"));
+                crate::widgets::radio_value(ui, landscape, false, tl!("Portrait"));
+                crate::widgets::radio_value(ui, landscape, true, tl!("Landscape"));
             });
             ui.label(egui::RichText::new(tl!("Pages")).font(semibold(12.5)));
-            ui.checkbox(mirror, tl!("Mirror margins"));
+            crate::widgets::checkbox(ui, mirror, tl!("Mirror margins"));
             page_paper_group(ui, paper, landscape, paper_custom);
             ui.label(egui::RichText::new(tl!("Document Grid")).font(semibold(12.5)));
             ui.horizontal_wrapped(|ui| {
-                ui.radio_value(&mut grid.0, 0, tl!("No grid"));
-                ui.radio_value(&mut grid.0, 1, tl!("Lines only"));
-                ui.radio_value(&mut grid.0, 2, tl!("Lines and characters"));
-                ui.radio_value(&mut grid.0, 3, tl!("Text snaps to characters"));
+                crate::widgets::radio_value(ui, &mut grid.0, 0, tl!("No grid"));
+                crate::widgets::radio_value(ui, &mut grid.0, 1, tl!("Lines only"));
+                crate::widgets::radio_value(ui, &mut grid.0, 2, tl!("Lines and characters"));
+                crate::widgets::radio_value(ui, &mut grid.0, 3, tl!("Text snaps to characters"));
             });
             crate::widgets::Grid::new("ps_grid").num_columns(4).show(ui, |ui| {
                 ui.add_enabled(grid.0 >= 2, egui::Label::new(tl!("Characters per line:")));
@@ -2254,8 +2254,8 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             });
             ui.horizontal(|ui| {
                 ui.label(tl!("Section direction:"));
-                ui.radio_value(rtl, false, tl!("Left-to-right"));
-                ui.radio_value(rtl, true, tl!("Right-to-left"));
+                crate::widgets::radio_value(ui, rtl, false, tl!("Left-to-right"));
+                crate::widgets::radio_value(ui, rtl, true, tl!("Right-to-left"));
             });
             if !message.is_empty() {
                 ui.label(egui::RichText::new(message.as_str()).small().color(ui.visuals().error_fg_color));
@@ -2263,8 +2263,8 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             page_valign_combo(ui, valign);
             // Word's Page Setup › Layout: a title page without the page number (#1230).
             ui.label(egui::RichText::new(tl!("Headers and footers")).font(semibold(12.5)));
-            ui.checkbox(odd_even, tl!("Different Odd & Even Pages"));
-            ui.checkbox(first_page, tl!("Different First Page"));
+            crate::widgets::checkbox(ui, odd_even, tl!("Different Odd & Even Pages"));
+            crate::widgets::checkbox(ui, first_page, tl!("Different First Page"));
             let (mut ok, cancel) = buttons(ui, tl!("OK"));
             if ok {
                 // Everything OK changes is one undo step; a refused command applies nothing.
@@ -2411,7 +2411,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 }
             });
             let mut include = stats.get("includeTextBoxes").and_then(Value::as_bool).unwrap_or(true);
-            if ui.checkbox(&mut include, tl!("Count words in text boxes and notes")).changed()
+            if crate::widgets::checkbox(ui, &mut include, tl!("Count words in text boxes and notes")).changed()
                 && let Ok(v) = app.run("review.wordCount", json!({"includeTextBoxes": include}))
             {
                 *stats = v;
@@ -2422,7 +2422,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
         Dialog::Zoom { percent } => {
             ui.horizontal(|ui| {
                 for p in [200.0, 100.0, 75.0] {
-                    ui.radio_value(percent, p, format!("{p}%"));
+                    crate::widgets::radio_value(ui, percent, p, format!("{p}%"));
                 }
             });
             // Logarithmic like the status bar slider, and wide enough to aim: the default 100 pt
@@ -2457,8 +2457,8 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 ui.text_edit_singleline(text);
             });
             ui.horizontal(|ui| {
-                ui.radio_value(diagonal, true, tl!("Diagonal"));
-                ui.radio_value(diagonal, false, tl!("Horizontal"));
+                crate::widgets::radio_value(ui, diagonal, true, tl!("Diagonal"));
+                crate::widgets::radio_value(ui, diagonal, false, tl!("Horizontal"));
             });
             let (ok, cancel) = buttons(ui, tl!("OK"));
             if ok {
@@ -2564,8 +2564,8 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 ui.end_row();
             });
             ui.horizontal(|ui| {
-                ui.checkbox(bold, tl!("Bold"));
-                ui.checkbox(italic, tl!("Italic"));
+                crate::widgets::checkbox(ui, bold, tl!("Bold"));
+                crate::widgets::checkbox(ui, italic, tl!("Italic"));
             });
             let (ok, cancel) = buttons(ui, tl!("OK"));
             if ok {
@@ -2646,7 +2646,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             }
             for (i, f) in formats.iter().enumerate() {
                 let label = wordcraft_engine::cmd::paste::FORMATS.iter().find(|(id, _)| id == f).map(|(_, l)| *l).unwrap_or(f.as_str());
-                ui.radio_value(choice, i, tl!(label));
+                crate::widgets::radio_value(ui, choice, i, tl!(label));
             }
             if let Some(f) = formats.get(*choice) {
                 ui.add_space(6.0);
@@ -2929,7 +2929,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                     }
                 });
             });
-            ui.checkbox(headers, tl!("First row of data contains column headers"));
+            crate::widgets::checkbox(ui, headers, tl!("First row of data contains column headers"));
             if !message.is_empty() {
                 ui.label(egui::RichText::new(message.as_str()).color(Tokens::get(ui.ctx()).red));
             }
@@ -3086,7 +3086,7 @@ pub(crate) fn recipient_list(
     if !editing {
         filter.editing = None;
     }
-    let merged_only = egui::Checkbox::new(&mut filter.only_merged, tl!("Show only records that will be merged"));
+    let merged_only = crate::widgets::Checkbox::new(&mut filter.only_merged, tl!("Show only records that will be merged"));
     ui.add_enabled(order.is_some(), merged_only);
     let visible = ui
         .horizontal(|ui| {
@@ -3317,13 +3317,13 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
     };
     heading(ui, "Table");
     crate::widgets::Grid::new("tp_table").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
-        ui.checkbox(&mut f.width_on, tl!("Preferred width:"));
+        crate::widgets::checkbox(ui, &mut f.width_on, tl!("Preferred width:"));
         ui.add_enabled(f.width_on, len(&mut f.width, 0.1, unit));
         ui.end_row();
         ui.label(tl!("Alignment:"));
         ui.horizontal(|ui| {
             for (v, l) in [("left", "Left"), ("center", "Center"), ("right", "Right")] {
-                ui.radio_value(&mut f.align, v.to_string(), tl!(l));
+                crate::widgets::radio_value(ui, &mut f.align, v.to_string(), tl!(l));
             }
         });
         ui.end_row();
@@ -3332,14 +3332,14 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
         ui.end_row();
         ui.label(tl!("Table direction:"));
         ui.horizontal(|ui| {
-            ui.radio_value(&mut f.rtl, false, tl!("Left-to-right"));
-            ui.radio_value(&mut f.rtl, true, tl!("Right-to-left"));
+            crate::widgets::radio_value(ui, &mut f.rtl, false, tl!("Left-to-right"));
+            crate::widgets::radio_value(ui, &mut f.rtl, true, tl!("Right-to-left"));
         });
         ui.end_row();
     });
     heading(ui, "Row");
     crate::widgets::Grid::new("tp_row").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
-        ui.checkbox(&mut f.row_height_on, tl!("Specify height:"));
+        crate::widgets::checkbox(ui, &mut f.row_height_on, tl!("Specify height:"));
         ui.horizontal(|ui| {
             ui.add_enabled(f.row_height_on, len(&mut f.row_height, 0.02, unit));
             ui.add_enabled_ui(f.row_height_on, |ui| {
@@ -3351,8 +3351,8 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
         });
         ui.end_row();
     });
-    ui.checkbox(&mut f.allow_break, tl!("Allow row to break across pages"));
-    ui.checkbox(&mut f.header_row, tl!("Repeat as header row on each page"));
+    crate::widgets::checkbox(ui, &mut f.allow_break, tl!("Allow row to break across pages"));
+    crate::widgets::checkbox(ui, &mut f.header_row, tl!("Repeat as header row on each page"));
     heading(ui, "Column");
     crate::widgets::Grid::new("tp_col").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.label(tl!("Preferred width:"));
@@ -3361,13 +3361,13 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
     });
     heading(ui, "Cell");
     crate::widgets::Grid::new("tp_cell").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
-        ui.checkbox(&mut f.cell_width_on, tl!("Preferred width:"));
+        crate::widgets::checkbox(ui, &mut f.cell_width_on, tl!("Preferred width:"));
         ui.add_enabled(f.cell_width_on, len(&mut f.cell_width, 0.1, unit));
         ui.end_row();
         ui.label(tl!("Vertical alignment:"));
         ui.horizontal(|ui| {
             for (v, l) in [("top", "Top"), ("center", "Center"), ("bottom", "Bottom")] {
-                ui.radio_value(&mut f.valign, v.to_string(), tl!(l));
+                crate::widgets::radio_value(ui, &mut f.valign, v.to_string(), tl!(l));
             }
         });
         ui.end_row();
@@ -3474,8 +3474,8 @@ fn para_number(ui: &mut Ui, value: &mut f32, kind: ParaNumber, key: &str, mixed:
 /// it, it shows as neither on nor off, and a click turns it on for all of them.
 fn para_check(ui: &mut Ui, on: &mut bool, text: &str, key: &str, mixed: &mut BTreeSet<String>) {
     if !mixed.contains(key) {
-        ui.checkbox(on, text);
-    } else if ui.add(egui::Checkbox::new(&mut false, text).indeterminate(true)).clicked() {
+        crate::widgets::checkbox(ui, on, text);
+    } else if ui.add(crate::widgets::Checkbox::new(&mut false, text).indeterminate(true)).clicked() {
         *on = true;
         mixed.remove(key);
     }
@@ -3569,11 +3569,11 @@ fn bookmark(app: &mut WordApp, ui: &mut Ui, name: &mut String, by_location: &mut
     ui.horizontal_top(|ui| {
         ui.label(tl!("Sort by:"));
         ui.vertical(|ui| {
-            ui.radio_value(by_location, false, tl!("Name"));
-            ui.radio_value(by_location, true, tl!("Location"));
+            crate::widgets::radio_value(ui, by_location, false, tl!("Name"));
+            crate::widgets::radio_value(ui, by_location, true, tl!("Location"));
         });
     });
-    ui.checkbox(hidden, tl!("Hidden bookmarks"));
+    crate::widgets::checkbox(ui, hidden, tl!("Hidden bookmarks"));
     let enter = ui.input(|i| i.key_pressed(egui::Key::Enter));
     if add || (enter && wordcraft_engine::cmd::insert::bookmark_name_ok(name.trim())) {
         let _ = app.run("insert.bookmark", json!({"name": name.trim()}));
@@ -3670,12 +3670,12 @@ fn manage_styles(app: &mut WordApp, ui: &mut Ui, alphabetical: &mut bool, select
     let builtin = cur.get("builtIn").and_then(Value::as_bool).unwrap_or(true);
     if ty != "table" {
         let mut gallery = cur.get("inGallery").and_then(Value::as_bool).unwrap_or(false);
-        if ui.checkbox(&mut gallery, tl!("Show in the Styles gallery")).changed() {
+        if crate::widgets::checkbox(ui, &mut gallery, tl!("Show in the Styles gallery")).changed() {
             let _ = app.run("styles.setVisibility", json!({"style": selected, "gallery": gallery}));
         }
     }
     let mut hidden = cur.get("hidden").and_then(Value::as_bool).unwrap_or(false);
-    if ui.checkbox(&mut hidden, tl!("Hide from style lists")).changed() {
+    if crate::widgets::checkbox(ui, &mut hidden, tl!("Hide from style lists")).changed() {
         let _ = app.run("styles.setVisibility", json!({"style": selected, "hidden": hidden}));
     }
     ui.add_space(4.0);

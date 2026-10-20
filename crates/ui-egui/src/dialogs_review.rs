@@ -648,7 +648,7 @@ fn setup_ui(app: &mut WordApp, ui: &mut Ui, st: &mut RestrictPane) {
         let inside = app.session.doc.perm_ranges().iter().any(|r| r.everyone() && r.start <= a && b <= r.end && r.start.story == a.story);
         let mut everyone = inside;
         let can = inside || a != b;
-        if ui.add_enabled(can, egui::Checkbox::new(&mut everyone, tl!("Everyone"))).changed() {
+        if ui.add_enabled(can, crate::widgets::Checkbox::new(&mut everyone, tl!("Everyone"))).changed() {
             let p = if everyone { json!({"exception": "add"}) } else { json!({"exception": "remove"}) };
             if let Err(e) = app.run("review.restrict", p) {
                 st.message = e;

@@ -283,7 +283,7 @@ pub fn define_list(app: &mut WordApp, ui: &mut Ui, f: &mut ListForm) -> bool {
             }
         });
         ui.end_row();
-        ui.add_enabled(l.follow == "tab", egui::Checkbox::new(&mut l.tab_on, tl!("Add tab stop at:")));
+        ui.add_enabled(l.follow == "tab", crate::widgets::Checkbox::new(&mut l.tab_on, tl!("Add tab stop at:")));
         ui.add_enabled(l.follow == "tab" && l.tab_on, len(&mut l.tab_at, unit));
         ui.end_row();
     });
