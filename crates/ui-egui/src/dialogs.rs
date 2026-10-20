@@ -1347,7 +1347,7 @@ pub fn table_grid_picker(ui: &mut Ui, app: &mut WordApp) {
     });
     let mut new_hover = (0, 0);
     let mut clicked = None;
-    egui::Grid::new("tgp").spacing(vec2(2.0, 2.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("tgp").spacing(vec2(2.0, 2.0)).show(ui, |ui| {
         for r in 1..=8 {
             for c in 1..=10 {
                 let (rect, resp) = ui.allocate_exact_size(vec2(16.0, 16.0), Sense::click());
@@ -1606,7 +1606,7 @@ fn page_paper_group(ui: &mut Ui, paper: &mut (f32, f32), landscape: &mut bool, c
         });
         combo.response.labelled_by(label.id);
     });
-    egui::Grid::new("ps_paper").num_columns(4).show(ui, |ui| {
+    crate::widgets::Grid::new("ps_paper").num_columns(4).show(ui, |ui| {
         use wordcraft_engine::cmd::page::{MAX_PAGE_SIDE, MIN_PAGE_SIDE};
         let range = MIN_PAGE_SIDE / ppu..=MAX_PAGE_SIDE / ppu;
         ui.label(tl!(l.width));
@@ -1803,7 +1803,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             if *strike {
                 fmt.strikethrough = egui::Stroke::new(1.0, preview_color);
             }
-            egui::Grid::new("fontdlg").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+            crate::widgets::Grid::new("fontdlg").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
                 // Word's two font boxes when East Asian text is in use: the Latin text font and
                 // the Asian text font, each with its own list (type to find a font).
                 let prev = app.previews.font_preview_fn();
@@ -1862,7 +1862,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             });
             ui.separator();
             ui.label(egui::RichText::new(tl!("Effects")).font(semibold(12.5)));
-            egui::Grid::new("fx").num_columns(2).show(ui, |ui| {
+            crate::widgets::Grid::new("fx").num_columns(2).show(ui, |ui| {
                 ui.checkbox(bold, tl!("Bold"));
                 ui.checkbox(italic, tl!("Italic"));
                 ui.end_row();
@@ -1951,7 +1951,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                     ui.label(egui::RichText::new(tl!("Indentation")).font(semibold(12.5)));
                     // Mirrored indents are the inside and outside ones (they swap on even pages).
                     let (l_label, r_label) = if opts[0] { ("Inside:", "Outside:") } else { ("Left:", "Right:") };
-                    egui::Grid::new("ind").num_columns(4).show(ui, |ui| {
+                    crate::widgets::Grid::new("ind").num_columns(4).show(ui, |ui| {
                         ui.label(tl!(l_label));
                         para_number(ui, left, ParaNumber::Length, "left", mixed);
                         ui.label(tl!(r_label));
@@ -1963,7 +1963,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                     });
                     para_check(ui, &mut opts[0], tl!("Mirror indents"), "mirrorIndents", mixed);
                     ui.label(egui::RichText::new(tl!("Spacing")).font(semibold(12.5)));
-                    egui::Grid::new("sp").num_columns(4).show(ui, |ui| {
+                    crate::widgets::Grid::new("sp").num_columns(4).show(ui, |ui| {
                         ui.label(tl!("Before:"));
                         para_number(ui, before, ParaNumber::Points, "spaceBefore", mixed);
                         ui.label(tl!("Line spacing:"));
@@ -2183,7 +2183,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             ok || cancel
         }
         Dialog::InsertTable { rows, cols } => {
-            egui::Grid::new("it").num_columns(2).show(ui, |ui| {
+            crate::widgets::Grid::new("it").num_columns(2).show(ui, |ui| {
                 ui.label(tl!("Number of columns:"));
                 ui.add(egui::DragValue::new(cols).range(1..=63));
                 ui.end_row();
@@ -2216,7 +2216,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             first_page,
         } => {
             ui.label(egui::RichText::new(tl!("Margins")).font(semibold(12.5)));
-            egui::Grid::new("ps").num_columns(4).show(ui, |ui| {
+            crate::widgets::Grid::new("ps").num_columns(4).show(ui, |ui| {
                 ui.label(tl!("Top:"));
                 ui.add(egui::DragValue::new(top).speed(3.6 / crate::options::unit().pt_per_unit()).measure(crate::options::unit()).max_decimals(2));
                 ui.label(tl!("Bottom:"));
@@ -2245,7 +2245,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 ui.radio_value(&mut grid.0, 2, tl!("Lines and characters"));
                 ui.radio_value(&mut grid.0, 3, tl!("Text snaps to characters"));
             });
-            egui::Grid::new("ps_grid").num_columns(4).show(ui, |ui| {
+            crate::widgets::Grid::new("ps_grid").num_columns(4).show(ui, |ui| {
                 ui.add_enabled(grid.0 >= 2, egui::Label::new(tl!("Characters per line:")));
                 ui.add_enabled(grid.0 >= 2, egui::DragValue::new(&mut grid.2).range(1..=1000));
                 ui.add_enabled(grid.0 >= 1, egui::Label::new(tl!("Lines per page:")));
@@ -2317,7 +2317,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 }
             });
             ui.add_space(4.0);
-            egui::Grid::new("lnk").num_columns(2).show(ui, |ui| {
+            crate::widgets::Grid::new("lnk").num_columns(2).show(ui, |ui| {
                 ui.label(tl!("Text to display:"));
                 ui.text_edit_singleline(text);
                 ui.end_row();
@@ -2396,7 +2396,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
         }
         Dialog::Bookmark { name, by_location, hidden, deleted } => bookmark(app, ui, name, by_location, hidden, deleted),
         Dialog::WordCount { stats } => {
-            egui::Grid::new("wc").num_columns(2).spacing(vec2(30.0, 6.0)).show(ui, |ui| {
+            crate::widgets::Grid::new("wc").num_columns(2).spacing(vec2(30.0, 6.0)).show(ui, |ui| {
                 for (l, k) in [
                     ("Pages", "pages"),
                     ("Words", "words"),
@@ -2477,7 +2477,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 ("right", "Right"),
                 ("rightVertical", "Right (vertical)"),
             ];
-            egui::Grid::new("phonetic").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+            crate::widgets::Grid::new("phonetic").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
                 ui.label(tl!("Base text:"));
                 ui.label(egui::RichText::new(base.as_str()).strong());
                 ui.end_row();
@@ -2513,7 +2513,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             ok || cancel || remove
         }
         Dialog::NewStyle { name, based_on, back } => {
-            egui::Grid::new("ns").num_columns(2).show(ui, |ui| {
+            crate::widgets::Grid::new("ns").num_columns(2).show(ui, |ui| {
                 ui.label(tl!("Name:"));
                 ui.text_edit_singleline(name);
                 ui.end_row();
@@ -2534,7 +2534,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             ok || cancel
         }
         Dialog::ModifyStyle { back, resume, id, name, font, size, bold, italic, color, before, after } => {
-            egui::Grid::new("ms").num_columns(2).show(ui, |ui| {
+            crate::widgets::Grid::new("ms").num_columns(2).show(ui, |ui| {
                 ui.label(tl!("Name:"));
                 ui.text_edit_singleline(name);
                 ui.end_row();
@@ -2840,7 +2840,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
         Dialog::EncryptPassword { password, confirm, message } => {
             ui.label(tl!("Anyone who opens the document will need this password."));
             ui.add_space(4.0);
-            egui::Grid::new("encrypt_password").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+            crate::widgets::Grid::new("encrypt_password").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
                 ui.label(tl!("Password:"));
                 let r = ui.add(egui::TextEdit::singleline(password.as_mut_string()).password(true).desired_width(220.0));
                 if password.is_empty() && confirm.is_empty() && !r.has_focus() {
@@ -2977,7 +2977,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
                 "Insert one text or another, depending on a field's value."
             }));
             ui.add_space(4.0);
-            egui::Grid::new("merge_rule").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+            crate::widgets::Grid::new("merge_rule").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
                 ui.label(tl!("Field:"));
                 if fields.is_empty() {
                     ui.text_edit_singleline(field);
@@ -3015,7 +3015,7 @@ fn body(app: &mut WordApp, ui: &mut Ui, d: &mut Dialog) -> bool {
             } else {
                 ui.label(tl!("The recipient-list field that fills each part of an address block and greeting line."));
                 ui.add_space(4.0);
-                egui::Grid::new("match_fields").num_columns(2).spacing(vec2(24.0, 6.0)).striped(true).show(ui, |ui| {
+                crate::widgets::Grid::new("match_fields").num_columns(2).spacing(vec2(24.0, 6.0)).striped(true).show(ui, |ui| {
                     for (part, key) in ADDRESS_PARTS {
                         ui.label(tl!(part));
                         match address.get(key).and_then(Value::as_str) {
@@ -3246,7 +3246,7 @@ fn recipient_filter(ui: &mut Ui, fields: &[String], filter: &mut RecipientFilter
         });
     };
     let mut remove = None;
-    egui::Grid::new("recipient_filter").num_columns(5).spacing(vec2(6.0, 4.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("recipient_filter").num_columns(5).spacing(vec2(6.0, 4.0)).show(ui, |ui| {
         ui.label("");
         ui.label(egui::RichText::new(tl!("Field")).weak());
         ui.label(egui::RichText::new(tl!("Comparison")).weak());
@@ -3288,7 +3288,7 @@ fn recipient_filter(ui: &mut Ui, fields: &[String], filter: &mut RecipientFilter
         }
     });
     ui.add_space(4.0);
-    egui::Grid::new("recipient_sort").num_columns(3).spacing(vec2(6.0, 4.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("recipient_sort").num_columns(3).spacing(vec2(6.0, 4.0)).show(ui, |ui| {
         for (i, (field, desc)) in filter.sort.iter_mut().enumerate() {
             ui.label(tl!(if i == 0 { "Sort by" } else { "Then by" }));
             field_combo(ui, ("rs_field", i), field, true);
@@ -3317,7 +3317,7 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
         ui.label(egui::RichText::new(tl!(s)).font(semibold(12.5)));
     };
     heading(ui, "Table");
-    egui::Grid::new("tp_table").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("tp_table").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.checkbox(&mut f.width_on, tl!("Preferred width:"));
         ui.add_enabled(f.width_on, len(&mut f.width, 0.1, unit));
         ui.end_row();
@@ -3339,7 +3339,7 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
         ui.end_row();
     });
     heading(ui, "Row");
-    egui::Grid::new("tp_row").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("tp_row").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.checkbox(&mut f.row_height_on, tl!("Specify height:"));
         ui.horizontal(|ui| {
             ui.add_enabled(f.row_height_on, len(&mut f.row_height, 0.02, unit));
@@ -3355,13 +3355,13 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
     ui.checkbox(&mut f.allow_break, tl!("Allow row to break across pages"));
     ui.checkbox(&mut f.header_row, tl!("Repeat as header row on each page"));
     heading(ui, "Column");
-    egui::Grid::new("tp_col").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("tp_col").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.label(tl!("Preferred width:"));
         ui.add(len(&mut f.column_width, 0.1, unit));
         ui.end_row();
     });
     heading(ui, "Cell");
-    egui::Grid::new("tp_cell").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("tp_cell").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.checkbox(&mut f.cell_width_on, tl!("Preferred width:"));
         ui.add_enabled(f.cell_width_on, len(&mut f.cell_width, 0.1, unit));
         ui.end_row();
@@ -3378,7 +3378,7 @@ fn table_properties(ui: &mut Ui, f: &mut TableForm) {
 fn cell_margins_dialog(ui: &mut Ui, f: &mut CellMarginsForm) {
     let unit = crate::options::unit();
     let max = 144.0 / unit.pt_per_unit();
-    egui::Grid::new("cell_margins").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("cell_margins").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         for (label, value) in [("Top:", &mut f.top), ("Left:", &mut f.left), ("Bottom:", &mut f.bottom), ("Right:", &mut f.right)] {
             ui.label(tl!(label));
             ui.add(egui::DragValue::new(value).speed(0.01).range(0.0..=max).measure(unit).max_decimals(2));

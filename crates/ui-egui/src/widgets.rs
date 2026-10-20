@@ -1340,6 +1340,45 @@ pub fn icon_menu_item(ui: &mut Ui, icon: &str, text: &str, shortcut: &str, min_w
     resp
 }
 
+/// `egui::Grid` that stays usable in a right-to-left layout. egui's Grid places its cells left to
+/// right inside an inner `ui.horizontal`, which a right-to-left parent (a mirrored dialog or pane)
+/// turns into a right-to-left row: the cells land in the wrong places, the grid never settles its
+/// sizes and keeps hiding itself, and the dialog holding it disappears. Under such a parent the grid
+/// runs in a left-to-right column; anywhere else it is egui's Grid, unchanged.
+pub struct Grid(egui::Grid);
+
+impl Grid {
+    pub fn new(id_salt: impl egui::AsIdSalt) -> Self {
+        Self(egui::Grid::new(id_salt))
+    }
+    pub fn num_columns(self, num_columns: usize) -> Self {
+        Self(self.0.num_columns(num_columns))
+    }
+    pub fn spacing(self, spacing: impl Into<egui::Vec2>) -> Self {
+        Self(self.0.spacing(spacing))
+    }
+    pub fn striped(self, striped: bool) -> Self {
+        Self(self.0.striped(striped))
+    }
+    pub fn min_col_width(self, width: f32) -> Self {
+        Self(self.0.min_col_width(width))
+    }
+    pub fn min_row_height(self, height: f32) -> Self {
+        Self(self.0.min_row_height(height))
+    }
+    pub fn max_col_width(self, width: f32) -> Self {
+        Self(self.0.max_col_width(width))
+    }
+    pub fn show<R>(self, ui: &mut egui::Ui, add_contents: impl FnOnce(&mut egui::Ui) -> R) -> egui::InnerResponse<R> {
+        if ui.layout().prefer_right_to_left() {
+            let layout = egui::Layout::top_down(egui::Align::Min);
+            ui.scope_builder(egui::UiBuilder::new().layout(layout), |ui| self.0.show(ui, add_contents)).inner
+        } else {
+            self.0.show(ui, add_contents)
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
