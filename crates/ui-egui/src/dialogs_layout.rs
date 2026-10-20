@@ -196,7 +196,7 @@ impl LineNumbersForm {
 fn line_numbers_ui(app: &mut WordApp, ui: &mut Ui, f: &mut LineNumbersForm) -> bool {
     ui.checkbox(&mut f.on, tl!("Add line numbering"));
     ui.add_enabled_ui(f.on, |ui| {
-        egui::Grid::new("lnum").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+        crate::widgets::Grid::new("lnum").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
             ui.label(tl!("Start at:"));
             ui.add(egui::DragValue::new(&mut f.start).range(1..=32_767));
             ui.end_row();
@@ -258,7 +258,7 @@ impl HyphenationForm {
 fn hyphenation_ui(app: &mut WordApp, ui: &mut Ui, f: &mut HyphenationForm) -> bool {
     ui.checkbox(&mut f.auto, tl!("Automatically hyphenate document"));
     ui.checkbox(&mut f.caps, tl!("Hyphenate words in CAPS"));
-    egui::Grid::new("hyph").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("hyph").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.label(tl!("Hyphenation zone:"));
         ui.add(egui::DragValue::new(&mut f.zone).speed(0.01).range(0.0..=22.0 * 72.0 / unit().pt_per_unit()).measure(unit()).max_decimals(2));
         ui.end_row();
@@ -934,7 +934,7 @@ fn alert(ui: &mut Ui, text: &Option<String>) {
 fn split_cells_ui(app: &mut WordApp, ui: &mut Ui, f: &mut SplitCellsForm) -> bool {
     // Several cells split one by one keep their rows.
     let rows_on = !(f.cells > 1 && !f.merge_first);
-    egui::Grid::new("split_cells").num_columns(2).show(ui, |ui| {
+    crate::widgets::Grid::new("split_cells").num_columns(2).show(ui, |ui| {
         ui.label(tl!("Number of columns:"));
         ui.add(egui::DragValue::new(&mut f.columns).range(1..=63));
         ui.end_row();
@@ -1060,7 +1060,7 @@ impl TextToTableForm {
 fn text_to_table_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TextToTableForm) -> bool {
     let before = (f.separator.clone(), f.other_char.clone(), f.columns);
     heading(ui, "Table size");
-    egui::Grid::new("text_to_table").num_columns(2).show(ui, |ui| {
+    crate::widgets::Grid::new("text_to_table").num_columns(2).show(ui, |ui| {
         ui.label(tl!("Number of columns:"));
         ui.add(egui::DragValue::new(&mut f.columns).range(1..=63));
         ui.end_row();
@@ -1076,7 +1076,7 @@ fn text_to_table_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TextToTableForm) -> 
     ui.radio_value(&mut f.autofit, "contents".to_string(), tl!("AutoFit to contents"));
     ui.radio_value(&mut f.autofit, "window".to_string(), tl!("AutoFit to window"));
     heading(ui, "Separate text at");
-    egui::Grid::new("text_to_table_sep").num_columns(2).show(ui, |ui| {
+    crate::widgets::Grid::new("text_to_table_sep").num_columns(2).show(ui, |ui| {
         ui.radio_value(&mut f.separator, "paragraph".to_string(), tl!("Paragraphs"));
         ui.radio_value(&mut f.separator, "comma".to_string(), tl!("Commas"));
         ui.end_row();
@@ -1270,7 +1270,7 @@ fn size_ui(app: &mut WordApp, ui: &mut Ui, f: &mut SizeForm) -> bool {
         (changed && v != was).then_some(v)
     };
     heading(ui, "Size");
-    egui::Grid::new("size_lengths").num_columns(4).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("size_lengths").num_columns(4).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         if let Some(h) = length(ui, "Height:", f.height) {
             f.set_height(h);
         }
@@ -1281,7 +1281,7 @@ fn size_ui(app: &mut WordApp, ui: &mut Ui, f: &mut SizeForm) -> bool {
     });
     heading(ui, "Scale");
     let (sw, sh) = f.scale();
-    egui::Grid::new("size_scale").num_columns(4).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
+    crate::widgets::Grid::new("size_scale").num_columns(4).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         if let Some(p) = percent(ui, "Height:", sh) {
             f.set_scale_height(p);
         }
