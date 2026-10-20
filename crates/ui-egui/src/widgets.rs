@@ -1379,6 +1379,51 @@ impl Grid {
     }
 }
 
+/// `ui.checkbox`, with the box on the right of its label under a right-to-left parent (a mirrored
+/// dialog or pane), as right-to-left interfaces draw it; clicking the label still toggles it.
+/// Anywhere else it is egui's checkbox unchanged.
+pub fn checkbox(ui: &mut egui::Ui, checked: &mut bool, text: impl Into<egui::WidgetText>) -> egui::Response {
+    if !ui.layout().prefer_right_to_left() {
+        return ui.checkbox(checked, text);
+    }
+    ui.horizontal(|ui| {
+        let mut b = ui.checkbox(checked, "");
+        let label = ui.add(egui::Label::new(text).sense(egui::Sense::click()));
+        if label.clicked() {
+            *checked = !*checked;
+            b.mark_changed();
+        }
+        b.union(label)
+    })
+    .inner
+}
+
+/// `ui.radio`, with the button on the right of its label under a right-to-left parent.
+pub fn radio(ui: &mut egui::Ui, selected: bool, text: impl Into<egui::WidgetText>) -> egui::Response {
+    if !ui.layout().prefer_right_to_left() {
+        return ui.radio(selected, text);
+    }
+    ui.horizontal(|ui| {
+        let b = ui.radio(selected, "");
+        let label = ui.add(egui::Label::new(text).sense(egui::Sense::click()));
+        b.union(label)
+    })
+    .inner
+}
+
+/// `ui.radio_value`, with the button on the right of its label under a right-to-left parent.
+pub fn radio_value<V: PartialEq>(ui: &mut egui::Ui, current: &mut V, alternative: V, text: impl Into<egui::WidgetText>) -> egui::Response {
+    if !ui.layout().prefer_right_to_left() {
+        return ui.radio_value(current, alternative, text);
+    }
+    let mut r = radio(ui, *current == alternative, text);
+    if r.clicked() && *current != alternative {
+        *current = alternative;
+        r.mark_changed();
+    }
+    r
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -155,7 +155,7 @@ fn drop_cap_ui(app: &mut WordApp, ui: &mut Ui, f: &mut DropCapForm) -> bool {
     ui.label(egui::RichText::new(tl!("Position")).font(semibold(12.5)));
     ui.horizontal(|ui| {
         for (v, l) in [("none", "None"), ("dropped", "Dropped"), ("margin", "In margin")] {
-            ui.radio_value(&mut f.position, v.to_string(), tl!(l));
+            crate::widgets::radio_value(ui, &mut f.position, v.to_string(), tl!(l));
         }
     });
     ui.add_space(6.0);
@@ -478,7 +478,7 @@ fn columns_ui(app: &mut WordApp, ui: &mut Ui, f: &mut ColumnsForm) -> bool {
             f.set_count(n);
         }
         ui.add_space(16.0);
-        ui.checkbox(&mut f.separator, tl!("Line between"));
+        crate::widgets::checkbox(ui, &mut f.separator, tl!("Line between"));
     });
     ui.add_space(6.0);
     ui.label(egui::RichText::new(tl!("Width and spacing")).font(semibold(12.5)));
@@ -1314,7 +1314,7 @@ fn field_ui(app: &mut WordApp, ui: &mut Ui, f: &mut FieldForm) -> bool {
             } else {
                 field_options(ui, f, &t);
                 ui.add_space(4.0);
-                ui.checkbox(&mut f.preserve, tl!("Preserve formatting during updates"));
+                crate::widgets::checkbox(ui, &mut f.preserve, tl!("Preserve formatting during updates"));
             }
         });
     });
@@ -1408,7 +1408,7 @@ fn field_options(ui: &mut Ui, f: &mut FieldForm, t: &Tokens) {
             ui.add_space(4.0);
             for (c, label) in STYLEREF_SWITCHES {
                 let mut on = f.style_switches.contains(*c);
-                if ui.checkbox(&mut on, tl!(label)).changed() {
+                if crate::widgets::checkbox(ui, &mut on, tl!(label)).changed() {
                     f.style_switches.retain(|x| x != *c);
                     if on {
                         f.style_switches.push(*c);
