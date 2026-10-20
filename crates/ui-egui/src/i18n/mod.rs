@@ -215,6 +215,12 @@ impl Lang {
         self.0.prefer_hans
     }
 
+    /// The language's catalog text (empty for English): the letters its interface draws, which
+    /// the interface fonts must cover.
+    pub fn catalog_text(self) -> &'static str {
+        self.0.source
+    }
+
     /// Is the interface written right to left (Hebrew), so it is laid out mirrored?
     pub fn is_rtl(self) -> bool {
         matches!(self.0.code, "he")

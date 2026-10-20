@@ -480,6 +480,33 @@ pub fn column<R>(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui) -> R) -> egui::
     ui.scope_builder(egui::UiBuilder::new().layout(egui::Layout::top_down(align)), add_contents)
 }
 
+/// A panel on the side where reading starts: the left, or the right in a right-to-left
+/// interface (Hebrew), so side panes swap sides with the text direction.
+pub fn leading_panel(id: &'static str) -> egui::Panel {
+    if crate::i18n::current().is_rtl() { egui::Panel::right(id) } else { egui::Panel::left(id) }
+}
+
+/// A panel on the side where reading ends: the right, or the left in a right-to-left interface.
+pub fn trailing_panel(id: &'static str) -> egui::Panel {
+    if crate::i18n::current().is_rtl() { egui::Panel::left(id) } else { egui::Panel::right(id) }
+}
+
+/// `add_contents` laid out from the right in a right-to-left interface: labels hug the right edge
+/// and the rows inside flow from the right. Left to right it runs directly in `ui`, unchanged.
+pub fn mirrored<R>(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui) -> R) -> R {
+    if crate::i18n::current().is_rtl() {
+        ui.scope_builder(egui::UiBuilder::new().layout(egui::Layout::top_down(egui::Align::Max)), add_contents).inner
+    } else {
+        add_contents(ui)
+    }
+}
+
+/// The row a header's or a dialog's trailing controls sit in: from the right edge, or from the
+/// left edge in a right-to-left interface.
+pub fn trailing_row(align: egui::Align) -> egui::Layout {
+    if crate::i18n::current().is_rtl() { egui::Layout::left_to_right(align) } else { egui::Layout::right_to_left(align) }
+}
+
 /// The direction ribbon rows flow in: from the right in a right-to-left interface.
 pub fn ribbon_row_layout(align: egui::Align) -> egui::Layout {
     if crate::i18n::current().is_rtl() { egui::Layout::right_to_left(align) } else { egui::Layout::left_to_right(align) }
