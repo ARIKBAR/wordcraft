@@ -1344,7 +1344,8 @@ pub fn icon_menu_item(ui: &mut Ui, icon: &str, text: &str, shortcut: &str, min_w
 /// right inside an inner `ui.horizontal`, which a right-to-left parent (a mirrored dialog or pane)
 /// turns into a right-to-left row: the cells land in the wrong places, the grid never settles its
 /// sizes and keeps hiding itself, and the dialog holding it disappears. Under such a parent the grid
-/// runs in a left-to-right column; anywhere else it is egui's Grid, unchanged.
+/// runs in a left-to-right column, with its columns mirrored (the first one rightmost, cells
+/// aligned right: `Grid::right_to_left` in vendor/egui); anywhere else it is egui's Grid, unchanged.
 pub struct Grid(egui::Grid);
 
 impl Grid {
@@ -1371,8 +1372,11 @@ impl Grid {
     }
     pub fn show<R>(self, ui: &mut egui::Ui, add_contents: impl FnOnce(&mut egui::Ui) -> R) -> egui::InnerResponse<R> {
         if ui.layout().prefer_right_to_left() {
+            // egui's grid lays itself out in a left-to-right row, so it runs in one, with its
+            // columns mirrored inside it instead.
             let layout = egui::Layout::top_down(egui::Align::Min);
-            ui.scope_builder(egui::UiBuilder::new().layout(layout), |ui| self.0.show(ui, add_contents)).inner
+            let grid = self.0.right_to_left(true);
+            ui.scope_builder(egui::UiBuilder::new().layout(layout), |ui| grid.show(ui, add_contents)).inner
         } else {
             self.0.show(ui, add_contents)
         }

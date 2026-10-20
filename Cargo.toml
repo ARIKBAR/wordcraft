@@ -3,7 +3,7 @@ resolver = "3"
 members = ["crates/*", "apps/*", "xtask"]
 default-members = ["crates/*", "apps/wordcraft", "apps/wordcraft-cli", "xtask"]
 # Vendored third-party crates are patched in below, not workspace members (no fmt/clippy/tests).
-exclude = ["vendor/epaint"]
+exclude = ["vendor/egui", "vendor/epaint"]
 
 [workspace.package]
 version = "0.8.0"
@@ -110,3 +110,6 @@ krilla = { git = "https://github.com/storytold/craft-libs", rev = "c3487320b2d1d
 # reordered for display, brackets mirrored, carets and hit-testing follow. Vendored from epaint
 # 0.36.2; see vendor/epaint/VENDORED.md.
 epaint = { path = "vendor/epaint" }
+# egui whose Grid can run right to left (first column rightmost), for mirrored dialogs and
+# panes. Vendored from egui 0.36.2; see vendor/egui/VENDORED.md.
+egui = { path = "vendor/egui" }
