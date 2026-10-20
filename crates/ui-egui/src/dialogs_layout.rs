@@ -943,7 +943,7 @@ fn split_cells_ui(app: &mut WordApp, ui: &mut Ui, f: &mut SplitCellsForm) -> boo
         ui.end_row();
     });
     let mut merge = f.merge_first;
-    if ui.add_enabled(f.several, egui::Checkbox::new(&mut merge, tl!("Merge cells before split"))).changed() {
+    if ui.add_enabled(f.several, crate::widgets::Checkbox::new(&mut merge, tl!("Merge cells before split"))).changed() {
         f.set_merge(merge);
     }
     alert(ui, &f.error);
@@ -1291,7 +1291,7 @@ fn size_ui(app: &mut WordApp, ui: &mut Ui, f: &mut SizeForm) -> bool {
         ui.end_row();
     });
     crate::widgets::checkbox(ui, &mut f.lock, tl!("Lock aspect ratio"));
-    ui.add_enabled(f.original.is_some(), egui::Checkbox::new(&mut f.relative, tl!("Relative to original picture size")));
+    ui.add_enabled(f.original.is_some(), crate::widgets::Checkbox::new(&mut f.relative, tl!("Relative to original picture size")));
     if let Some((w, h)) = f.uncropped {
         heading(ui, "Original size");
         ui.horizontal(|ui| {

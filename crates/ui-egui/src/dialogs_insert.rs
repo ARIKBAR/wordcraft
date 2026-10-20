@@ -518,7 +518,7 @@ fn columns_ui(app: &mut WordApp, ui: &mut Ui, f: &mut ColumnsForm) -> bool {
                 f.rebalance(i);
             }
             let mut equal = f.equal;
-            if ui.add_enabled(f.count > 1, egui::Checkbox::new(&mut equal, tl!("Equal column width"))).changed() {
+            if ui.add_enabled(f.count > 1, crate::widgets::Checkbox::new(&mut equal, tl!("Equal column width"))).changed() {
                 f.equal = equal;
                 if equal {
                     f.even_out();

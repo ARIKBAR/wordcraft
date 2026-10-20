@@ -183,8 +183,7 @@ fn general(app: &mut WordApp, ui: &mut Ui) {
     interface_size_picker(app, ui);
     crate::widgets::checkbox(ui, &mut app.ui.mini_toolbar, tl!("Show the mini toolbar when text is selected"));
     let mut dark_page = app.session.view.dark_mode;
-    if ui
-        .checkbox(&mut dark_page, tl!("Dark page (white text on black)"))
+    if crate::widgets::checkbox(ui, &mut dark_page, tl!("Dark page (white text on black)"))
         .on_hover_text(tl!("Show documents with their colours inverted, like View › Switch Modes. Saving, printing and PDFs are unchanged."))
         .changed()
     {
@@ -195,8 +194,7 @@ fn general(app: &mut WordApp, ui: &mut Ui) {
     ui.add_space(8.0);
     section(ui, "Start-up");
     let mut start = app.ui.start_screen;
-    if ui
-        .checkbox(&mut start, tl!("Show the Start screen when WordCraft starts"))
+    if crate::widgets::checkbox(ui, &mut start, tl!("Show the Start screen when WordCraft starts"))
         .on_hover_text(tl!(
             "On: WordCraft opens on File › Home, with a blank document, the templates and your recent documents. Off: it opens a blank document."
         ))
@@ -397,7 +395,7 @@ fn save(app: &mut WordApp, ui: &mut Ui) {
     // The browser can't write to the user's files, so AutoSave can't be turned on there (#176).
     let browser = app.autosave_block() == Some(crate::AutoSaveBlock::Browser);
     let mut autosave = app.autosave && !browser;
-    let r = ui.add_enabled(!browser, egui::Checkbox::new(&mut autosave, tl!("AutoSave documents you have saved in WordCraft")));
+    let r = ui.add_enabled(!browser, crate::widgets::Checkbox::new(&mut autosave, tl!("AutoSave documents you have saved in WordCraft")));
     if browser {
         r.on_disabled_hover_text(crate::AutoSaveBlock::Browser.reason());
     } else if r.changed() {
@@ -460,8 +458,7 @@ fn advanced(app: &mut WordApp, ui: &mut Ui) {
     flag(app, ui, "Use the Insert key to switch overtype on and off", "insertKeyOvertype", pr.insert_key_overtype);
     flag(app, ui, "Overtype (typing replaces the characters after the caret)", "overtype", pr.overtype);
     let mut guides = app.ui.alignment_guides;
-    if ui
-        .checkbox(&mut guides, tl!("Show alignment guides when moving pictures and shapes"))
+    if crate::widgets::checkbox(ui, &mut guides, tl!("Show alignment guides when moving pictures and shapes"))
         .on_hover_text(tl!("Moved objects snap to the page's edges and centre, the margins and other objects. Hold Alt to move freely."))
         .changed()
     {
@@ -520,8 +517,7 @@ fn advanced(app: &mut WordApp, ui: &mut Ui) {
     ui.add_space(8.0);
     section(ui, "Animation");
     let mut caret = app.ui.caret_animation;
-    if ui
-        .checkbox(&mut caret, tl!("Animate the caret (it glides and fades)"))
+    if crate::widgets::checkbox(ui, &mut caret, tl!("Animate the caret (it glides and fades)"))
         .on_hover_text(tl!(
             "On: the caret glides to its new place when you type or use the arrow keys, and its blink fades. Off: it jumps and blinks on and off."
         ))

@@ -182,7 +182,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
 
                 if native {
                     if app.ui.print.copies > 1 {
-                        ui.add_enabled(!app.printing.busy(), egui::Checkbox::new(&mut app.ui.print.collate, tl!("Collate copies")));
+                        ui.add_enabled(!app.printing.busy(), crate::widgets::Checkbox::new(&mut app.ui.print.collate, tl!("Collate copies")));
                     }
                 } else {
                     ui.label(egui::RichText::new(tl!("Copies")).font(medium(13.0)));

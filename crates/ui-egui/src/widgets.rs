@@ -1424,6 +1424,43 @@ pub fn radio_value<V: PartialEq>(ui: &mut egui::Ui, current: &mut V, alternative
     r
 }
 
+/// `egui::Checkbox` (for `ui.add` / `ui.add_enabled`), with the box on the right of its label
+/// under a right-to-left parent; clicking the label still toggles it. Elsewhere it is egui's.
+pub struct Checkbox<'a> {
+    checked: &'a mut bool,
+    text: egui::WidgetText,
+    indeterminate: bool,
+}
+
+impl<'a> Checkbox<'a> {
+    pub fn new(checked: &'a mut bool, text: impl Into<egui::WidgetText>) -> Self {
+        Self { checked, text: text.into(), indeterminate: false }
+    }
+    pub fn indeterminate(mut self, indeterminate: bool) -> Self {
+        self.indeterminate = indeterminate;
+        self
+    }
+}
+
+impl egui::Widget for Checkbox<'_> {
+    fn ui(self, ui: &mut egui::Ui) -> egui::Response {
+        let Self { checked, text, indeterminate } = self;
+        if !ui.layout().prefer_right_to_left() {
+            return ui.add(egui::Checkbox::new(checked, text).indeterminate(indeterminate));
+        }
+        ui.horizontal(|ui| {
+            let mut b = ui.add(egui::Checkbox::new(checked, "").indeterminate(indeterminate));
+            let label = ui.add(egui::Label::new(text).sense(egui::Sense::click()));
+            if label.clicked() && ui.is_enabled() {
+                *checked = !*checked;
+                b.mark_changed();
+            }
+            b.union(label)
+        })
+        .inner
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
