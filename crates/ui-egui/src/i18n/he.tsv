@@ -2689,3 +2689,28 @@ preview	Title	כותרת
 	Type a page number, or +2 / -1.	הקלד מספר עמוד, או +2 / -1.
 	Wait for the print job to finish submitting before closing.	המתן לסיום שליחת עבודת ההדפסה לפני הסגירה.
 template	Letter	מכתב
+	Restore opens an unsaved copy. Your original file stays unchanged.	שחזור פותח עותק שלא נשמר. הקובץ המקורי נשאר ללא שינוי.
+	Recovery is disabled while this document has a password.	השחזור מושבת כל עוד למסמך יש סיסמה.
+	Local recovery is unavailable or still loading.	השחזור המקומי אינו זמין או שעדיין נטען.
+	No recovery copies.	אין עותקי שחזור.
+	Recovery copy	עותק שחזור
+	Restore	שחזר
+	Discard…	השלך…
+	Continue without restoring	המשך בלי לשחזר
+	Recover documents	שחזור מסמכים
+	{language} (dictionary unreadable)	{language} (לא ניתן לקרוא את המילון)
+	The spelling dictionary for {language} couldn't be read, so it isn't checked. File: {file}. Reason: {reason}	לא ניתן היה לקרוא את מילון האיות עבור {language}, ולכן האיות אינו נבדק. קובץ: {file}. סיבה: {reason}
+	select a picture first	בחר קודם תמונה
+	Crop on the page works on unturned pictures: set Rotation to 0° first, or use the crop boxes	חיתוך על העמוד פועל רק על תמונות שאינן מסובבות: קבע קודם סיבוב של 0°, או השתמש בתיבות החיתוך
+	The number must be a divisor of {max}.	המספר חייב לחלק את {max} ללא שארית.
+	Nothing of this type in the document.	אין במסמך פריטים מסוג זה.
+	Automatically add words to list (First Letter)	הוסף מילים לרשימה אוטומטית (אות ראשונה)
+	Automatically add words to list (INitial CAps)	הוסף מילים לרשימה אוטומטית (שתי אותיות רישיות)
+	No new sources in that file	אין מקורות חדשים בקובץ הזה
+	Imported 1 source	יובא מקור אחד
+	Imported {n} sources	יובאו {n} מקורות
+	Couldn't save {name}, so it is still open and nothing was lost: {error}	לא ניתן היה לשמור את {name}, ולכן הוא עדיין פתוח ושום דבר לא אבד: {error}
+	{language}: {file} (unreadable: {reason})	{language}: {file} (לא ניתן לקריאה: {reason})
+	Scale to paper size	התאם לגודל הנייר
+	{paper}   {width} × {height}	{paper}   {width} × {height}
+	Open a document first	פתח קודם מסמך
