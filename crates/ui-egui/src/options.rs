@@ -172,7 +172,7 @@ fn set(app: &mut WordApp, params: Value) {
 /// A checkbox for a `file.options` on/off setting.
 fn flag(app: &mut WordApp, ui: &mut Ui, label: &str, key: &str, value: bool) {
     let mut v = value;
-    if ui.checkbox(&mut v, tl!(label)).changed() {
+    if crate::widgets::checkbox(ui, &mut v, tl!(label)).changed() {
         set(app, json!({ key: v }));
     }
 }
@@ -181,7 +181,7 @@ fn general(app: &mut WordApp, ui: &mut Ui) {
     section(ui, "Interface");
     theme_picker(app, ui);
     interface_size_picker(app, ui);
-    ui.checkbox(&mut app.ui.mini_toolbar, tl!("Show the mini toolbar when text is selected"));
+    crate::widgets::checkbox(ui, &mut app.ui.mini_toolbar, tl!("Show the mini toolbar when text is selected"));
     let mut dark_page = app.session.view.dark_mode;
     if ui
         .checkbox(&mut dark_page, tl!("Dark page (white text on black)"))
@@ -190,7 +190,7 @@ fn general(app: &mut WordApp, ui: &mut Ui) {
     {
         let _ = app.run("view.darkMode", json!({"value": dark_page}));
     }
-    ui.checkbox(&mut app.ui.show_discord, tl!("Show the community button in the title bar"));
+    crate::widgets::checkbox(ui, &mut app.ui.show_discord, tl!("Show the community button in the title bar"));
     default_app_button(app, ui);
     ui.add_space(8.0);
     section(ui, "Start-up");
@@ -240,25 +240,25 @@ fn display(app: &mut WordApp, ui: &mut Ui) {
         ("Hidden text", "hidden", m.hidden),
     ] {
         let mut v = on;
-        if ui.checkbox(&mut v, tl!(label)).changed() {
+        if crate::widgets::checkbox(ui, &mut v, tl!(label)).changed() {
             set(app, json!({"marks": { key: v }}));
         }
     }
     let mut marks = app.session.view.marks;
-    if ui.checkbox(&mut marks, tl!("Show all formatting marks")).changed() {
+    if crate::widgets::checkbox(ui, &mut marks, tl!("Show all formatting marks")).changed() {
         let _ = app.run("view.marks", json!({"value": marks}));
     }
     ui.add_space(8.0);
     section(ui, "Page display");
     let mut ruler = app.session.view.ruler;
-    if ui.checkbox(&mut ruler, tl!("Show rulers")).changed() {
+    if crate::widgets::checkbox(ui, &mut ruler, tl!("Show rulers")).changed() {
         let _ = app.run("view.ruler", json!({"value": ruler}));
     }
     numeral_picker(app, ui);
     ui.add_space(8.0);
     section(ui, "Printing");
-    ui.checkbox(&mut app.ui.print_backgrounds, tl!("Print the page color"));
-    ui.checkbox(&mut app.ui.update_fields_before_print, tl!("Update fields before printing"));
+    crate::widgets::checkbox(ui, &mut app.ui.print_backgrounds, tl!("Print the page color"));
+    crate::widgets::checkbox(ui, &mut app.ui.update_fields_before_print, tl!("Update fields before printing"));
 }
 
 fn proofing(app: &mut WordApp, ui: &mut Ui) {
@@ -415,7 +415,7 @@ fn save(app: &mut WordApp, ui: &mut Ui) {
     ];
     for (label, key, value) in rows {
         let mut v = value;
-        if ui.checkbox(&mut v, tl!(label)).changed()
+        if crate::widgets::checkbox(ui, &mut v, tl!(label)).changed()
             && let Err(e) = app.run("file.privacyOptions", json!({ key: v }))
         {
             app.status(e);
@@ -448,7 +448,7 @@ fn accessibility(app: &mut WordApp, ui: &mut Ui) {
         }
     });
     let mut skip = app.session.read_aloud.skip_citations;
-    if ui.checkbox(&mut skip, tl!("Skip citations & bibliography")).changed() {
+    if crate::widgets::checkbox(ui, &mut skip, tl!("Skip citations & bibliography")).changed() {
         let _ = app.run("readAloud.skipCitations", json!({"value": skip}));
     }
 }
@@ -514,7 +514,7 @@ fn advanced(app: &mut WordApp, ui: &mut Ui) {
         ui.end_row();
     });
     let mut keytips = app.ui.keytips_enabled;
-    if ui.checkbox(&mut keytips, tl!("Show KeyTips (Alt or F10)")).changed() {
+    if crate::widgets::checkbox(ui, &mut keytips, tl!("Show KeyTips (Alt or F10)")).changed() {
         let _ = app.run("ui.keytips", json!({"value": keytips}));
     }
     ui.add_space(8.0);

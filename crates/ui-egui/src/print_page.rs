@@ -191,7 +191,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                         ui.add(egui::DragValue::new(&mut n).range(1..=wordcraft_engine::print::MAX_COPIES).speed(0.2));
                         app.ui.print.copies = n.clamp(1, wordcraft_engine::print::MAX_COPIES);
                         if app.ui.print.copies > 1 {
-                            ui.checkbox(&mut app.ui.print.collate, tl!("Collate copies"));
+                            crate::widgets::checkbox(ui, &mut app.ui.print.collate, tl!("Collate copies"));
                         }
                     });
                 }

@@ -317,7 +317,7 @@ fn caption_ui(app: &mut WordApp, ui: &mut Ui, f: &mut CaptionForm) -> Next {
         choice(ui, "cap_pos", &mut f.position, &[("below".to_string(), "Below the item"), ("above".to_string(), "Above the item")]);
         ui.end_row();
     });
-    ui.checkbox(&mut f.exclude_label, tl!("Leave the label out of the caption"));
+    crate::widgets::checkbox(ui, &mut f.exclude_label, tl!("Leave the label out of the caption"));
     ui.add_space(4.0);
     ui.horizontal(|ui| {
         if ui.button(tl!("New Label…")).clicked() {
@@ -451,7 +451,7 @@ fn numbering_ui(ui: &mut Ui, f: &mut CaptionForm, was: &CaptionForm) -> Next {
         choice(ui, "cap_fmt", &mut f.format, &opts);
         ui.end_row();
     });
-    ui.checkbox(&mut f.chapter, tl!("Add the chapter number"));
+    crate::widgets::checkbox(ui, &mut f.chapter, tl!("Add the chapter number"));
     ui.add_enabled_ui(f.chapter, |ui| {
         crate::widgets::Grid::new("cap_chap").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
             ui.label(tl!("Chapters begin at:"));
@@ -566,15 +566,15 @@ fn index_ui(app: &mut WordApp, ui: &mut Ui, f: &mut IndexForm) -> Next {
     crate::widgets::Grid::new("idx").num_columns(2).spacing(vec2(10.0, 6.0)).show(ui, |ui| {
         ui.label(tl!("Type:"));
         ui.horizontal(|ui| {
-            ui.radio_value(&mut f.kind, "indented".to_string(), tl!("Indented"));
-            ui.radio_value(&mut f.kind, "runIn".to_string(), tl!("Run-in"));
+            crate::widgets::radio_value(ui, &mut f.kind, "indented".to_string(), tl!("Indented"));
+            crate::widgets::radio_value(ui, &mut f.kind, "runIn".to_string(), tl!("Run-in"));
         });
         ui.end_row();
         ui.label(tl!("Columns:"));
         ui.add(egui::DragValue::new(&mut f.columns).range(1..=4));
         ui.end_row();
         ui.label("");
-        ui.checkbox(&mut f.right_align, tl!("Page numbers at the right margin"));
+        crate::widgets::checkbox(ui, &mut f.right_align, tl!("Page numbers at the right margin"));
         ui.end_row();
         ui.label(tl!("Tab leader:"));
         ui.add_enabled_ui(f.right_align, |ui| {
@@ -583,7 +583,7 @@ fn index_ui(app: &mut WordApp, ui: &mut Ui, f: &mut IndexForm) -> Next {
         });
         ui.end_row();
         ui.label("");
-        ui.checkbox(&mut f.headings, tl!("Letter headings"));
+        crate::widgets::checkbox(ui, &mut f.headings, tl!("Letter headings"));
         ui.end_row();
     });
     ui.add_space(4.0);
@@ -656,13 +656,13 @@ fn mark_ui(app: &mut WordApp, ui: &mut Ui, f: &mut MarkForm) -> Next {
     });
     heading(ui, "Options");
     ui.horizontal(|ui| {
-        ui.radio_value(&mut f.option, "see".to_string(), tl!("Cross-reference:"));
+        crate::widgets::radio_value(ui, &mut f.option, "see".to_string(), tl!("Cross-reference:"));
         ui.add_enabled(f.option == "see", egui::TextEdit::singleline(&mut f.see).desired_width(160.0));
     });
-    ui.radio_value(&mut f.option, "page".to_string(), tl!("This page"));
+    crate::widgets::radio_value(ui, &mut f.option, "page".to_string(), tl!("This page"));
     ui.horizontal(|ui| {
         ui.add_enabled_ui(!f.bookmarks.is_empty(), |ui| {
-            ui.radio_value(&mut f.option, "range".to_string(), tl!("Pages of bookmark:"));
+            crate::widgets::radio_value(ui, &mut f.option, "range".to_string(), tl!("Pages of bookmark:"));
         });
         ui.add_enabled_ui(f.option == "range", |ui| {
             let opts: Vec<(String, &str)> = f.bookmarks.iter().map(|b| (b.clone(), b.as_str())).collect();
@@ -675,8 +675,8 @@ fn mark_ui(app: &mut WordApp, ui: &mut Ui, f: &mut MarkForm) -> Next {
     });
     heading(ui, "Page number style");
     ui.horizontal(|ui| {
-        ui.checkbox(&mut f.bold, tl!("Bold"));
-        ui.checkbox(&mut f.italic, tl!("Italic"));
+        crate::widgets::checkbox(ui, &mut f.bold, tl!("Bold"));
+        crate::widgets::checkbox(ui, &mut f.italic, tl!("Italic"));
     });
     if !f.message.is_empty() {
         ui.label(egui::RichText::new(&f.message).small());
@@ -803,9 +803,9 @@ fn toc_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TocForm) -> Next {
         .collect();
     sample(ui, &lines, f.right_align, leader_char(&f.leader));
     ui.add_space(6.0);
-    ui.checkbox(&mut f.page_numbers, tl!("Include page numbers"));
+    crate::widgets::checkbox(ui, &mut f.page_numbers, tl!("Include page numbers"));
     ui.add_enabled_ui(f.page_numbers, |ui| {
-        ui.checkbox(&mut f.right_align, tl!("Page numbers at the right margin"));
+        crate::widgets::checkbox(ui, &mut f.right_align, tl!("Page numbers at the right margin"));
         ui.horizontal(|ui| {
             ui.label(tl!("Tab leader:"));
             ui.add_enabled_ui(f.right_align, |ui| {
@@ -814,7 +814,7 @@ fn toc_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TocForm) -> Next {
             });
         });
     });
-    ui.checkbox(&mut f.hyperlinks, tl!("Link entries to their headings"));
+    crate::widgets::checkbox(ui, &mut f.hyperlinks, tl!("Link entries to their headings"));
     ui.horizontal(|ui| {
         ui.label(tl!("Levels:"));
         ui.add(egui::DragValue::new(&mut f.levels).range(1..=9));
@@ -841,7 +841,7 @@ fn toc_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TocForm) -> Next {
 
 fn toc_options_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TocForm, was: &TocForm) -> Next {
     heading(ui, "Collect entries from:");
-    ui.checkbox(&mut f.heading_styles, crate::i18n::fmt(tl!("Heading styles (levels 1–{n})"), &[("n", &f.levels.to_string())]));
+    crate::widgets::checkbox(ui, &mut f.heading_styles, crate::i18n::fmt(tl!("Heading styles (levels 1–{n})"), &[("n", &f.levels.to_string())]));
     ui.label(tl!("Other styles and their TOC level:"));
     // A solid scroll bar takes its own room beside the list instead of floating over the level boxes.
     ui.spacing_mut().scroll = egui::style::ScrollStyle::solid();
@@ -856,8 +856,8 @@ fn toc_options_ui(app: &mut WordApp, ui: &mut Ui, f: &mut TocForm, was: &TocForm
             }
         });
     });
-    ui.checkbox(&mut f.outline_levels, tl!("Outline levels"));
-    ui.checkbox(&mut f.tc_fields, tl!("TC entry fields"));
+    crate::widgets::checkbox(ui, &mut f.outline_levels, tl!("Outline levels"));
+    crate::widgets::checkbox(ui, &mut f.tc_fields, tl!("TC entry fields"));
     ui.add_space(4.0);
     if ui.button(tl!("Reset")).clicked() {
         f.heading_styles = true;
@@ -1068,7 +1068,7 @@ fn source_ui(app: &mut WordApp, ui: &mut Ui, f: &mut SourceForm) -> Next {
             ui.end_row();
         }
     });
-    ui.checkbox(&mut f.show_all, tl!("Show every bibliography field"));
+    crate::widgets::checkbox(ui, &mut f.show_all, tl!("Show every bibliography field"));
     let (ok, cancel) = buttons(ui, tl!("OK"));
     if ok {
         let src = serde_json::to_value(&f.source).unwrap_or(Value::Null);

@@ -2115,21 +2115,21 @@ fn view(app: &mut WordApp, ui: &mut Ui) {
         // Three rows fill the group's height; a fourth check box would run into its label.
         stack(ui, |ui| {
             let mut r = v.ruler;
-            if ui.checkbox(&mut r, tl!("Ruler")).changed() {
+            if crate::widgets::checkbox(ui, &mut r, tl!("Ruler")).changed() {
                 let _ = app.run("view.ruler", json!({"value": r}));
             }
             let mut g = v.gridlines;
-            if ui.checkbox(&mut g, tl!("Gridlines")).changed() {
+            if crate::widgets::checkbox(ui, &mut g, tl!("Gridlines")).changed() {
                 let _ = app.run("view.gridlines", json!({"value": g}));
             }
             let mut n = v.nav_pane;
-            if ui.checkbox(&mut n, tl!("Navigation Pane")).changed() {
+            if crate::widgets::checkbox(ui, &mut n, tl!("Navigation Pane")).changed() {
                 let _ = app.run("view.navigationPane", json!({"value": n}));
             }
         });
         stack(ui, |ui| {
             let mut w = v.hide_white_space;
-            if ui.checkbox(&mut w, tl!("Hide White Space")).changed() {
+            if crate::widgets::checkbox(ui, &mut w, tl!("Hide White Space")).changed() {
                 let _ = app.run("view.hideWhiteSpace", json!({"value": w}));
             }
         });
@@ -2216,11 +2216,11 @@ fn outlining(app: &mut WordApp, ui: &mut Ui) {
             ui.add_space(3.0);
             crate::widgets::row(ui, |ui| {
                 let mut f = !o.hide_formatting;
-                if ui.checkbox(&mut f, tl!("Show Text Formatting")).changed() {
+                if crate::widgets::checkbox(ui, &mut f, tl!("Show Text Formatting")).changed() {
                     let _ = app.run("outline.showFormatting", json!({ "value": f }));
                 }
                 let mut first = o.first_line_only;
-                if ui.checkbox(&mut first, tl!("Show First Line Only")).changed() {
+                if crate::widgets::checkbox(ui, &mut first, tl!("Show First Line Only")).changed() {
                     let _ = app.run("outline.firstLineOnly", json!({ "value": first }));
                 }
             });
@@ -2702,7 +2702,7 @@ fn table_design(app: &mut WordApp, ui: &mut Ui) {
                 let _ = row;
                 for (label, key, val) in items {
                     let mut v = *val;
-                    if ui.checkbox(&mut v, tl!(label)).changed() {
+                    if crate::widgets::checkbox(ui, &mut v, tl!(label)).changed() {
                         let _ = app.run("table.look", json!({ *key: v }));
                     }
                 }
