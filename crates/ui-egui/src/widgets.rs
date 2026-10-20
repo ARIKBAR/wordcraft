@@ -280,11 +280,14 @@ pub fn small(ui: &mut Ui, app: &mut WordApp, icon: &str, label: Option<&str>, ti
     keytip_badge(ui, r, id, tip);
     let on = enabled(app, id);
     bg(ui, r, &resp, checked, &t);
-    let ic = Rect::from_center_size(pos2(r.min.x + 12.0, r.center().y), vec2(17.0, 17.0));
+    // Mirrored in a right-to-left interface: the icon on the right, the label before it.
+    let rtl = crate::i18n::current().is_rtl();
+    let ic = Rect::from_center_size(pos2(if rtl { r.max.x - 12.0 } else { r.min.x + 12.0 }, r.center().y), vec2(17.0, 17.0));
     let (c, a) = if on { (t.icon, t.accent) } else { (t.text_disabled, t.text_disabled) };
     icons::paint(ui.painter(), ic, icon, c, a);
     if let Some(l) = label {
-        ui.painter().text(pos2(r.min.x + 24.0, r.center().y), Align2::LEFT_CENTER, l, regular(11.5), if on { t.text } else { t.text_disabled });
+        let (x, anchor) = if rtl { (r.max.x - 24.0, Align2::RIGHT_CENTER) } else { (r.min.x + 24.0, Align2::LEFT_CENTER) };
+        ui.painter().text(pos2(x, r.center().y), anchor, l, regular(11.5), if on { t.text } else { t.text_disabled });
     }
     let resp = tooltip(app, resp, tip, id);
     command_menu(&resp, app, id);
@@ -423,6 +426,11 @@ pub fn group(ui: &mut Ui, title: &str, launcher: Option<&str>, app: &mut WordApp
 pub fn group_titled(ui: &mut Ui, id_title: &str, title: &str, launcher: Option<&str>, app: &mut WordApp, add: impl FnOnce(&mut Ui, &mut WordApp)) {
     let t = Tokens::get(ui.ctx());
     let start = ui.cursor().min;
+    // A right-to-left interface (Hebrew) lays the groups out from the right: the cursor advances
+    // leftwards, so widths and the separator are measured from its right edge.
+    let rtl = crate::i18n::current().is_rtl();
+    let edge = |ui: &Ui| if rtl { ui.cursor().max.x } else { ui.cursor().min.x };
+    let start_x = edge(ui);
     // #662: the window may be too narrow for the tab; the plan says how this group fits.
     let position = crate::ribbon_fit::position(ui.ctx());
     let level = crate::ribbon_fit::level(ui.ctx(), id_title);
@@ -432,10 +440,10 @@ pub fn group_titled(ui: &mut Ui, id_title: &str, title: &str, launcher: Option<&
         // Not folded: a drop-down left open while it was folded doesn't come back by itself.
         ui.data_mut(|d| d.remove::<bool>(collapsed_open_id(ui, id_title, position)));
         let label_w = ui.ctx().fonts_mut(|f| f.layout_no_wrap(title.to_string(), regular(11.0), t.group_label).size().x);
-        let inner = ui.vertical(|ui| {
+        let inner = column(ui, |ui| {
             ui.set_min_width(label_w + if launcher.is_some() { 22.0 } else { 10.0 });
             crate::ribbon_fit::set_compact(ui.ctx(), level == crate::ribbon_fit::COMPACT);
-            let content = ui.allocate_ui_with_layout(vec2(ui.available_width(), CONTENT_H), egui::Layout::left_to_right(egui::Align::Min), |ui| {
+            let content = ui.allocate_ui_with_layout(vec2(ui.available_width(), CONTENT_H), ribbon_row_layout(egui::Align::Min), |ui| {
                 ui.spacing_mut().item_spacing = vec2(1.0, 1.0);
                 add(ui, app);
             });
@@ -448,9 +456,10 @@ pub fn group_titled(ui: &mut Ui, id_title: &str, title: &str, launcher: Option<&
             let _ = content;
         });
         let r = inner.response.rect;
+        let (left, right) = if rtl { (r.min.x, start_x) } else { (start.x, r.max.x) };
         title_row(
             ui,
-            Rect::from_min_max(pos2(start.x, start.y + CONTENT_H), pos2(r.max.x, start.y + CONTENT_H + LABEL_H)),
+            Rect::from_min_max(pos2(left, start.y + CONTENT_H), pos2(right, start.y + CONTENT_H + LABEL_H)),
             id_title,
             title,
             launcher,
@@ -458,10 +467,22 @@ pub fn group_titled(ui: &mut Ui, id_title: &str, title: &str, launcher: Option<&
         );
     }
     ui.add_space(5.0);
-    let x = ui.cursor().min.x;
+    let x = edge(ui);
     ui.painter().line_segment([pos2(x, start.y + 4.0), pos2(x, start.y + CONTENT_H + LABEL_H - 4.0)], Stroke::new(1.0, t.border));
     ui.add_space(6.0);
-    crate::ribbon_fit::record(ui.ctx(), id_title, level, ui.cursor().min.x - start.x);
+    crate::ribbon_fit::record(ui.ctx(), id_title, level, (edge(ui) - start_x).abs());
+}
+
+/// A ribbon column (`ui.vertical`). In a right-to-left interface it hugs its right edge, so the
+/// rows inside it flow from the right too and the group mirrors as a whole.
+pub fn column<R>(ui: &mut Ui, add_contents: impl FnOnce(&mut Ui) -> R) -> egui::InnerResponse<R> {
+    let align = if crate::i18n::current().is_rtl() { egui::Align::Max } else { egui::Align::Min };
+    ui.scope_builder(egui::UiBuilder::new().layout(egui::Layout::top_down(align)), add_contents)
+}
+
+/// The direction ribbon rows flow in: from the right in a right-to-left interface.
+pub fn ribbon_row_layout(align: egui::Align) -> egui::Layout {
+    if crate::i18n::current().is_rtl() { egui::Layout::right_to_left(align) } else { egui::Layout::left_to_right(align) }
 }
 
 /// A group's title row (`r`): the centred title and, with a `launcher`, its dialog launcher.
@@ -470,7 +491,9 @@ fn title_row(ui: &mut Ui, r: Rect, id_title: &str, title: &str, launcher: Option
     let title_y = r.center().y;
     ui.painter().text(pos2(r.center().x, title_y), Align2::CENTER_CENTER, title, regular(11.0), t.group_label);
     if let Some(cmd) = launcher {
-        let lr = Rect::from_center_size(pos2(r.max.x - 6.0, title_y), vec2(11.0, 11.0));
+        // The launcher sits in the group's trailing corner: bottom left when mirrored.
+        let lx = if crate::i18n::current().is_rtl() { r.min.x + 6.0 } else { r.max.x - 6.0 };
+        let lr = Rect::from_center_size(pos2(lx, title_y), vec2(11.0, 11.0));
         let resp = ui.interact(lr, ui.id().with(("launch", id_title)), Sense::click());
         if resp.hovered() {
             ui.painter().rect_filled(lr.expand(2.0), 2.0, t.hover);
@@ -1245,19 +1268,22 @@ fn icon_text_button_with(ui: &mut Ui, icon: &str, text: &str, font: egui::FontId
     let st = drawn_state(ui, &resp, true);
     let r = r.expand(st.expansion);
     ui.painter().rect(r, ui.visuals().widgets.inactive.corner_radius, st.fill, st.stroke, egui::StrokeKind::Inside);
+    // Laid out from the right edge in a right-to-left interface: icon, text, then the marker.
+    let rtl = crate::i18n::current().is_rtl();
+    let at = |offset: f32, w: f32| if rtl { r.max.x - offset - w } else { r.min.x + offset };
     icons::paint(
         ui.painter(),
-        Rect::from_center_size(pos2(r.min.x + pad.x + icon_w / 2.0, r.center().y), vec2(icon_w, icon_w)),
+        Rect::from_min_size(pos2(at(pad.x, icon_w), r.center().y - icon_w / 2.0), vec2(icon_w, icon_w)),
         icon,
         t.icon,
         t.accent,
     );
-    let text_x = r.min.x + pad.x + icon_w + if show_text { 4.0 } else { 0.0 };
+    let text_offset = pad.x + icon_w + if show_text { 4.0 } else { 0.0 };
     if show_text {
-        ui.painter().galley(pos2(text_x, r.center().y - galley.size().y / 2.0), galley, st.text);
+        ui.painter().galley(pos2(at(text_offset, text_w), r.center().y - galley.size().y / 2.0), galley, st.text);
     }
     if marker {
-        let c = pos2(text_x + text_w + 4.0 + DROPDOWN / 2.0, r.center().y);
+        let c = pos2(at(text_offset + text_w + 4.0, DROPDOWN) + DROPDOWN / 2.0, r.center().y);
         icons::paint(ui.painter(), Rect::from_center_size(c, vec2(DROPDOWN, DROPDOWN)), "dropdown", st.text, st.text);
     }
     resp
