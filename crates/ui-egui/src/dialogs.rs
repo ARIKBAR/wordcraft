@@ -1472,7 +1472,7 @@ pub fn show(app: &mut WordApp, ctx: &egui::Context) {
     let window = crate::window_close::window(ctx, egui::Window::new(tl!(title)).id(id).collapsible(false).resizable(false));
     let shown = place_dialog(ctx, id, window).show(ctx, |ui| {
         ui.set_min_width(340.0);
-        close = body(app, ui, &mut d);
+        close = crate::widgets::mirrored(ui, |ui| body(app, ui, &mut d));
     });
     if let Some(shown) = &shown {
         if let Dialog::SaveChanges { name, message, .. } = &d {

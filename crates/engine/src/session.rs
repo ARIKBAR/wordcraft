@@ -927,6 +927,27 @@ impl Session {
         }
     }
 
+    /// Make the blank document a session starts with right-to-left (`rtl`) or left-to-right, as a
+    /// Hebrew interface writes Hebrew: its paragraphs default to right-to-left
+    /// (`w:pPrDefault/w:bidi`). Like [`Session::set_editing_language`] it only touches a document
+    /// nobody has touched yet — untitled, unchanged, no undo steps, no text — and adds no undo step.
+    pub fn set_default_direction(&mut self, rtl: bool) {
+        let untouched = self.path.is_none() && !self.dirty && self.history.is_empty() && self.redo.is_empty();
+        if !untouched || !self.doc.plain_text(StoryRef::Body).trim().is_empty() || self.doc.paragraph_count() > 1 {
+            return;
+        }
+        let want = rtl.then_some(true);
+        if self.doc.styles.default_para.bidi == want {
+            return;
+        }
+        self.doc.styles.default_para.bidi = want;
+        if rtl {
+            self.doc.styles.default_para_present = true;
+        }
+        self.rev = self.rev.wrapping_add(1);
+        self.relayout();
+    }
+
     /// Snapshot for undo before a change.
     pub fn checkpoint(&mut self, label: &str) {
         if label == "Typing" && self.typing_open {

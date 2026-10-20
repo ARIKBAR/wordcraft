@@ -38,7 +38,7 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
         app.ui.backstage_page = "home".into();
     }
     let mac = app.integrated_titlebar;
-    egui::Panel::left("backstage_nav")
+    crate::widgets::leading_panel("backstage_nav")
         .exact_size(200.0)
         // Fixed width, as in Word: without this egui shows a resize handle that does nothing (#502).
         .resizable(false)
