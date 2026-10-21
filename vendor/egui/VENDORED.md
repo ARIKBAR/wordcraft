@@ -3,8 +3,8 @@
 This is [egui](https://github.com/emilk/egui/tree/main/crates/egui) 0.36.2 as published on
 crates.io, patched into the workspace by `[patch.crates-io]` in the root `Cargo.toml`, next to the
 vendored epaint (see `vendor/epaint/VENDORED.md`). egui is (c) Emil Ernerfeldt and the egui
-contributors, dual-licensed MIT OR Apache-2.0 (see `LICENSE-MIT` / `LICENSE-APACHE` at the
-repository root, which carry the same terms).
+contributors, dual-licensed MIT OR Apache-2.0 (their upstream license files, unchanged from egui 0.36.2, are kept
+here: `LICENSE-MIT`, `LICENSE-APACHE`).
 
 It exists for one change: **grids that run right to left** (Hebrew, Arabic). Upstream
 `egui::Grid` always puts its first column on the left and aligns every cell's contents left, so in

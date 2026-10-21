@@ -8505,4 +8505,9 @@ fn a_right_to_left_interface_starts_the_blank_document_right_to_left() {
     run(&mut s, "text.insert", json!({"text": "Hello"}));
     s.set_default_direction(true);
     assert_eq!(s.doc.styles.default_para.bidi, None, "a touched document keeps its direction");
+    run(&mut s, "file.new", json!({}));
+    assert_eq!(s.doc.styles.default_para.bidi, Some(true), "File › New starts right to left too");
+    s.set_default_direction(false);
+    run(&mut s, "file.new", json!({}));
+    assert_eq!(s.doc.styles.default_para.bidi, None, "and left to right again after switching back");
 }

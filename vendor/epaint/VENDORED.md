@@ -3,8 +3,8 @@
 This is [epaint](https://github.com/emilk/egui/tree/main/crates/epaint) 0.36.2, the text and
 shape layer of egui, as published on crates.io, patched into the workspace by
 `[patch.crates-io]` in the root `Cargo.toml`. egui and epaint are © Emil Ernerfeldt and the egui
-contributors, dual-licensed MIT OR Apache-2.0 (see `LICENSE-MIT` / `LICENSE-APACHE` at the
-repository root, which carry the same terms).
+contributors, dual-licensed MIT OR Apache-2.0 (their upstream license files, unchanged from egui 0.36.2, are kept
+here: `LICENSE-MIT`, `LICENSE-APACHE`).
 
 It exists for one change: **right-to-left text** (Hebrew, Arabic). Upstream epaint shapes and lays
 out text strictly left to right, so Hebrew showed with its words in the wrong order and numbers
