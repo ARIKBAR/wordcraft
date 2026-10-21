@@ -467,6 +467,9 @@ pub struct Session {
     /// `None` is WordCraft's default, US English. The front end sets it from the interface
     /// language with [`Session::set_editing_language`] (a Polish interface writes Polish).
     pub editing_lang: Option<String>,
+    /// New blank documents start right to left (`w:pPrDefault/w:bidi`), as a Hebrew interface
+    /// writes Hebrew. Set with [`Session::set_default_direction`].
+    pub default_rtl: bool,
     /// Editing inside an equation: which one and the caret in it.
     pub math: Option<MathEdit>,
     /// Equations are typed in LaTeX rather than the linear format.
@@ -682,6 +685,7 @@ impl Session {
             keymap: crate::KeyMap::default(),
             ribbon: crate::RibbonLayout::default(),
             editing_lang: None,
+            default_rtl: false,
             read_aloud: Default::default(),
             password: None,
             #[cfg(not(target_arch = "wasm32"))]
@@ -927,11 +931,13 @@ impl Session {
         }
     }
 
-    /// Make the blank document a session starts with right-to-left (`rtl`) or left-to-right, as a
-    /// Hebrew interface writes Hebrew: its paragraphs default to right-to-left
-    /// (`w:pPrDefault/w:bidi`). Like [`Session::set_editing_language`] it only touches a document
-    /// nobody has touched yet — untitled, unchanged, no undo steps, no text — and adds no undo step.
+    /// Make new blank documents right-to-left (`rtl`) or left-to-right, as a Hebrew interface
+    /// writes Hebrew: their paragraphs default to right-to-left (`w:pPrDefault/w:bidi`). File › New
+    /// follows it ([`Session::default_rtl`]); the open document changes too if nobody has touched
+    /// it yet — untitled, unchanged, no undo steps, no text — like
+    /// [`Session::set_editing_language`], and with no undo step.
     pub fn set_default_direction(&mut self, rtl: bool) {
+        self.default_rtl = rtl;
         let untouched = self.path.is_none() && !self.dirty && self.history.is_empty() && self.redo.is_empty();
         if !untouched || !self.doc.plain_text(StoryRef::Body).trim().is_empty() || self.doc.paragraph_count() > 1 {
             return;
@@ -1221,6 +1227,7 @@ impl Session {
             ribbon: _,
             // A preference for new documents, like `prefs`: not part of this document.
             editing_lang: _,
+            default_rtl: _,
             // Equation editing mode, like `view`: not part of the document or its history.
             math: _,
             math_latex: _,

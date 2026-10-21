@@ -1190,6 +1190,20 @@ fn tessellate_row(
 
 /// Create background for glyphs that have them.
 /// Creates as few rectangular regions as possible.
+/// A row's glyphs from left to right on screen. That is `row.glyphs` as it is, unless the row
+/// has right-to-left text: bidi then moved those glyphs (their logical order stays in
+/// `row.glyphs`), and they come sorted by x. The sort is stable, so a zero-width mark at its
+/// base's x stays with it.
+fn glyphs_left_to_right(row: &Row) -> impl Iterator<Item = &Glyph> {
+    let sorted = row.has_rtl().then(|| {
+        let mut glyphs: Vec<&Glyph> = row.glyphs.iter().collect();
+        glyphs.sort_by(|a, b| a.pos.x.total_cmp(&b.pos.x));
+        glyphs
+    });
+    let as_is = sorted.is_none().then(|| row.glyphs.iter());
+    sorted.into_iter().flatten().chain(as_is.into_iter().flatten())
+}
+
 fn add_row_backgrounds(point_scale: PointScale, job: &LayoutJob, row: &Row, mesh: &mut Mesh) {
     if row.glyphs.is_empty() {
         return;
@@ -1207,7 +1221,7 @@ fn add_row_backgrounds(point_scale: PointScale, job: &LayoutJob, row: &Row, mesh
     let mut run_start = None;
     let mut last_rect = Rect::NAN;
 
-    for glyph in &row.glyphs {
+    for glyph in glyphs_left_to_right(row) {
         let format = &job.sections[glyph.section_index as usize].format;
         let color = format.background;
         let rect = glyph.logical_rect();
@@ -1310,7 +1324,7 @@ fn add_row_hline(
     let mut line_start = None;
     let mut last_right_x = f32::NAN;
 
-    for glyph in &row.glyphs {
+    for glyph in glyphs_left_to_right(row) {
         let (stroke, mut y) = stroke_and_y(glyph);
         stroke.round_center_to_pixel(point_scale.pixels_per_point, &mut y);
 
@@ -1529,6 +1543,38 @@ mod tests {
 
     use super::{super::*, *};
     use crate::text::cursor::CCursor;
+
+    /// On a right-to-left row the glyphs sit in visual order, not logical order. A background or
+    /// an underline still spans the whole word, from its leftmost glyph to its rightmost one.
+    #[test]
+    fn test_rtl_background_and_underline_span_the_row() {
+        let mut fonts = FontsImpl::new(TextOptions::default(), FontDefinitions::default());
+        let format = TextFormat {
+            background: Color32::RED,
+            underline: Stroke::new(1.0, Color32::WHITE),
+            ..Default::default()
+        };
+        let job = LayoutJob::single_section("שלום עולם".into(), format);
+        let galley = layout(&mut fonts, 1.0, job.into());
+        let row = &galley.rows[0].row;
+        assert!(row.has_rtl());
+        let left = row.glyphs.iter().map(|g| g.pos.x).fold(f32::INFINITY, f32::min);
+        let right = row.glyphs.iter().map(|g| g.max_x()).fold(f32::NEG_INFINITY, f32::max);
+        let visuals = &row.visuals;
+        let span = |vertices: &[crate::Vertex]| {
+            let xs = vertices.iter().map(|v| v.pos.x);
+            (xs.clone().fold(f32::INFINITY, f32::min), xs.fold(f32::NEG_INFINITY, f32::max))
+        };
+        let glyphs = &visuals.glyph_vertex_range;
+        for (what, vertices) in [
+            ("background", &visuals.mesh.vertices[..glyphs.start]),
+            ("underline", &visuals.mesh.vertices[glyphs.end..]),
+        ] {
+            assert!(!vertices.is_empty(), "no {what}");
+            let (min, max) = span(vertices);
+            assert!(min <= left + 1.0 && max >= right - 1.0, "{what} {min}..{max} misses the row {left}..{right}");
+        }
+    }
 
     #[test]
     fn test_zero_max_width() {

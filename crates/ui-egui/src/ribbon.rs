@@ -331,7 +331,9 @@ pub fn show(app: &mut WordApp, ui: &mut Ui) {
                     })
                     .collect();
                 let plan = plan_strip(&specs, button_levels, ui.available_width(), MORE_TABS_W + 2.0);
-                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                // Share, Editing and Comments sit at the trailing edge: the right, or the left in a
+                // right-to-left interface, so that File starts the tabs at the right edge there.
+                ui.with_layout(crate::widgets::trailing_row(egui::Align::Center), |ui| {
                     // No document open (#1129): nothing to share, edit or comment on — but only
                     // these buttons. Disabling the whole line took the tab strip with it: the
                     // tabs took clicks that did nothing, so the empty window had no way back to

@@ -1387,7 +1387,9 @@ impl Grid {
 /// dialog or pane), as right-to-left interfaces draw it; clicking the label still toggles it.
 /// Anywhere else it is egui's checkbox unchanged.
 pub fn checkbox(ui: &mut egui::Ui, checked: &mut bool, text: impl Into<egui::WidgetText>) -> egui::Response {
-    if !ui.layout().prefer_right_to_left() {
+    let text = text.into();
+    // Without a label there is nothing to put the box beside (and no empty label to add).
+    if !ui.layout().prefer_right_to_left() || text.is_empty() {
         return ui.checkbox(checked, text);
     }
     ui.horizontal(|ui| {
@@ -1404,7 +1406,8 @@ pub fn checkbox(ui: &mut egui::Ui, checked: &mut bool, text: impl Into<egui::Wid
 
 /// `ui.radio`, with the button on the right of its label under a right-to-left parent.
 pub fn radio(ui: &mut egui::Ui, selected: bool, text: impl Into<egui::WidgetText>) -> egui::Response {
-    if !ui.layout().prefer_right_to_left() {
+    let text = text.into();
+    if !ui.layout().prefer_right_to_left() || text.is_empty() {
         return ui.radio(selected, text);
     }
     ui.horizontal(|ui| {
@@ -1449,7 +1452,7 @@ impl<'a> Checkbox<'a> {
 impl egui::Widget for Checkbox<'_> {
     fn ui(self, ui: &mut egui::Ui) -> egui::Response {
         let Self { checked, text, indeterminate } = self;
-        if !ui.layout().prefer_right_to_left() {
+        if !ui.layout().prefer_right_to_left() || text.is_empty() {
             return ui.add(egui::Checkbox::new(checked, text).indeterminate(indeterminate));
         }
         ui.horizontal(|ui| {

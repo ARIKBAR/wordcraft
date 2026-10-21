@@ -1085,6 +1085,8 @@ impl WordApp {
             return;
         }
         self.font_generation = generation;
+        // A face added now may have the interface language's letters (Hebrew): look again.
+        self.interface_fonts_for = None;
         self.session.relayout();
         self.previews.fonts_changed(ctx, db.user_fonts().iter().flat_map(|f| f.families()));
         ctx.request_repaint();
@@ -1885,8 +1887,8 @@ impl WordApp {
 
     /// The interface faces (Inter) have no Hebrew, Arabic, Thai …: an interface language in such a
     /// script would draw its labels as `?`. Borrow the document fonts' fallback faces for the
-    /// letters of the language's catalog, as the caption does; once per language. CJK interfaces
-    /// use the CJK UI fonts instead.
+    /// letters of the language's catalog, as the caption does; once per language, and again after
+    /// fonts are added or removed (`watch_fonts`). CJK interfaces use the CJK UI fonts instead.
     fn ensure_interface_fonts(&mut self, lang: i18n::Lang) {
         if self.interface_fonts_for == Some(lang) {
             return;
